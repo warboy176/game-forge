@@ -1,0 +1,9 @@
+{
+ "idea": "a one-button jumper on a rooftop chase at night",
+ "title": "Rooftop Chase",
+ "passed": true,
+ "attempts": 2,
+ "problems": [],
+ "model": "qwen3-coder:30b",
+ "seconds": 75.6
+}
