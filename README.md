@@ -7,6 +7,8 @@
 There's a post going around: two programmers, about a hundred games a month, all written by AI.
 The pipeline behind that isn't a secret, so here it is.
 
+**[Play the five example games in your browser →](https://warboy176.github.io/game-forge/games/)**
+
 ![The arcade page game-forge builds](screenshot.png)
 
 ## What it does
