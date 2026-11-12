@@ -1,0 +1,9 @@
+{
+ "idea": "a snake game where the snake is a freight train collecting cargo",
+ "title": "Cargo Train",
+ "passed": true,
+ "attempts": 1,
+ "problems": [],
+ "model": "qwen3-coder:30b",
+ "seconds": 35.4
+}
