@@ -1,0 +1,6 @@
+# one idea per line; lines starting with # are ignored
+a snake game where the snake is a freight train collecting cargo
+dodge falling meteors with a tiny spaceship that can only move left and right
+a one-button jumper on a rooftop chase at night
+stack swinging blocks into the tallest tower you can
+pop rising bubbles before they reach the top, but never pop the red ones

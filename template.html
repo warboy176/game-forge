@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en" data-game-line="{{GAME_LINE}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>{{TITLE}}</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #07080c; overflow: hidden; touch-action: none; user-select: none; }
+  canvas { display: block; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+</style>
+</head>
+<body>
+<canvas id="c" width="480" height="720"></canvas>
+<script>
+  // Errors land in DOM attributes so any test harness (or you, in devtools) can read them.
+  (() => {
+    const root = document.documentElement, base = +root.dataset.gameLine || 1;
+    window.__forgeLog = (msg, line) => {
+      const list = JSON.parse(root.dataset.forgeErrors || "[]");
+      const where = line ? " (line " + (line - base + 1) + " of the game code)" : "";
+      if (list.length < 10 && !list.includes(msg + where)) list.push(msg + where);
+      root.dataset.forgeErrors = JSON.stringify(list);
+    };
+    addEventListener("error", e => window.__forgeLog(e.message || "script error", e.lineno));
+  })();
+</script>
+<script>
+"use strict";
+(() => {
+  // ---- game-forge engine: canvas, input, loop, score, game over. The model writes only GAME.
+  const W = 480, H = 720;
+  const canvas = document.getElementById("c"), ctx = canvas.getContext("2d");
+  const fit = () => { const s = Math.min(innerWidth / W, innerHeight / H); canvas.style.width = W * s + "px"; canvas.style.height = H * s + "px"; };
+  addEventListener("resize", fit); fit();
+
+  const input = { left: false, right: false, up: false, down: false, action: false, pressed: {}, pointer: { x: W / 2, y: H / 2, down: false } };
+  const KEYS = { ArrowLeft: "left", KeyA: "left", ArrowRight: "right", KeyD: "right", ArrowUp: "up", KeyW: "up",
+                 ArrowDown: "down", KeyS: "down", Space: "action", Enter: "action" };
+  addEventListener("keydown", e => { const k = KEYS[e.code]; if (k) { if (!input[k]) input.pressed[k] = true; input[k] = true; e.preventDefault(); } });
+  addEventListener("keyup", e => { const k = KEYS[e.code]; if (k) input[k] = false; });
+  const aim = e => { const r = canvas.getBoundingClientRect(); input.pointer.x = (e.clientX - r.left) * W / r.width; input.pointer.y = (e.clientY - r.top) * H / r.height; };
+  canvas.addEventListener("pointerdown", e => { aim(e); input.pointer.down = true; input.action = true; input.pressed.action = true; });
+  addEventListener("pointermove", aim);
+  addEventListener("pointerup", () => { input.pointer.down = false; input.action = false; });
+
+  const forge = window.__forge = { frames: 0, state: "play" };
+  document.documentElement.dataset.forgeFrames = 0;
+  const bestKey = "best:" + document.title;
+  let score = 0, over = false, best = 0;
+  try { best = +(localStorage.getItem(bestKey) || 0); } catch (e) {}
+  const api = {
+    W, H, input,
+    rand: (a, b) => a + Math.random() * (b - a),
+    randInt: (a, b) => Math.floor(a + Math.random() * (b - a + 1)),
+    clamp: (v, a, b) => Math.max(a, Math.min(b, v)),
+    overlap: (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y,
+    dist: (a, b) => Math.hypot(a.x - b.x, a.y - b.y),
+    addScore: n => { score += n; },
+    get score() { return score; },
+    gameOver: () => {
+      if (over) return;
+      over = true;
+      if (score > best) { best = score; try { localStorage.setItem(bestKey, best); } catch (e) {} }
+    },
+  };
+  const report = (where, e) => {
+    const m = /\.html?:(\d+):\d+/.exec((e && e.stack) || "");
+    window.__forgeLog(where + "(): " + ((e && e.message) || e), m ? +m[1] : 0);
+  };
+
+/*{{GAME}}*/
+
+  const reset = () => { score = 0; over = false; try { GAME.init(api); } catch (e) { report("init", e); } };
+  reset();
+  let last = performance.now();
+  const frame = now => {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (over) { if (input.pressed.action) reset(); }
+    else { try { GAME.update(dt, api); } catch (e) { report("update", e); } }
+    ctx.save(); try { GAME.draw(ctx, api); } catch (e) { report("draw", e); } ctx.restore();
+    ctx.fillStyle = "#fff"; ctx.font = "bold 22px system-ui, sans-serif";
+    ctx.textAlign = "left"; ctx.fillText("Score " + score, 14, 32);
+    ctx.textAlign = "right"; ctx.fillText("Best " + best, W - 14, 32);
+    if (over) {
+      ctx.fillStyle = "rgba(0,0,0,.62)"; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = "#fff"; ctx.textAlign = "center";
+      ctx.font = "bold 46px system-ui, sans-serif"; ctx.fillText("GAME OVER", W / 2, H / 2 - 18);
+      ctx.font = "22px system-ui, sans-serif"; ctx.fillText("Score " + score + "  -  tap or press Space", W / 2, H / 2 + 26);
+    }
+    input.pressed = {};
+    forge.frames++; forge.state = over ? "over" : "play";
+    if (forge.frames % 10 === 0) { document.documentElement.dataset.forgeFrames = forge.frames; document.documentElement.dataset.forgeState = forge.state; }
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
