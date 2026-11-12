@@ -1,0 +1,9 @@
+{
+ "idea": "dodge falling meteors with a tiny spaceship that can only move left and right",
+ "title": "Meteor Dodge",
+ "passed": true,
+ "attempts": 2,
+ "problems": [],
+ "model": "qwen3-coder:30b",
+ "seconds": 51.5
+}
