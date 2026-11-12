@@ -1,0 +1,9 @@
+{
+ "idea": "pop rising bubbles before they reach the top, but never pop the red ones",
+ "title": "Bubble Pop",
+ "passed": true,
+ "attempts": 2,
+ "problems": [],
+ "model": "qwen3-coder:30b",
+ "seconds": 60.8
+}
