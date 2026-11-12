@@ -1,0 +1,9 @@
+{
+ "idea": "stack swinging blocks into the tallest tower you can",
+ "title": "Block Tower",
+ "passed": true,
+ "attempts": 2,
+ "problems": [],
+ "model": "qwen3-coder:30b",
+ "seconds": 72.2
+}
