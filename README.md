@@ -82,6 +82,15 @@ took between 35 and 76 seconds, start to finish.
 - The play-test needs Playwright and a Chromium download. `--no-check` skips it, at the cost of
   shipping games nobody has run.
 
+## Forge Pro (V2)
+
+The paid upgrade adds sound and music, screen shake and particles, levels, a quality score for
+every game, an overnight factory that keeps only the best, and upload-ready builds with covers and
+store listings for itch.io, Poki and CrazyGames.
+**[Forge Pro on Patreon →](https://www.patreon.com/warboy176/posts/forge-pro-v2-and-175203298)**
+
+This free version stays free.
+
 ## How it fits together
 
 | File | Job |
